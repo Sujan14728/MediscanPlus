@@ -2,4 +2,5 @@
 Minor Project BCT 077 Batch
 
 #Running client
--npx expo start
+- npm install
+- npx expo start
