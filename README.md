@@ -6,4 +6,4 @@ Minor Project BCT 077 Batch
 - npx expo start
 
 # to sync with the project
-git pull origin master
+git pull origin main
