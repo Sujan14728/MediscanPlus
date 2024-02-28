@@ -74,7 +74,11 @@ const CameraComponent = () => {
               position: 'absolute',
             }}
           >
-            <Button title={'Re-take'} icon="retweet" />
+            <Button
+              title={'Re-take'}
+              icon="retweet"
+              onPress={() => setImage(null)}
+            />
             <Button title={'Save'} icon="check" />
           </View>
         ) : (
