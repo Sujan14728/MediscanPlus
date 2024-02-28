@@ -42,7 +42,6 @@ async def get_student(name:str | None=None):
 async def create_student(student_id:int,student:Student):
     if student_id in students:
         return {"Error":"student already exists"}
-    
     students[student_id] = student
     return students[student_id]
 
