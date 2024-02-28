@@ -6,7 +6,6 @@ import re
 class TextRecognizer:
     def __init__(self, img: str):
         reader = easyocr.Reader(["en"])
-        img = Image.open(img)
         self.results = reader.readtext(img)
         self.extracted_text = self.get_text()
 

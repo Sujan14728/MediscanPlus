@@ -1,20 +1,12 @@
 from fastapi import FastAPI,Path,File,UploadFile
 from pydantic import BaseModel
-from .ocr import TextRecognizer
+from ocr import TextRecognizer
+from PIL import Image
+from io import BytesIO
 
-class Student(BaseModel):
-    name:str
-    age:int
-    year:str
-
-class UpdateStudent(BaseModel):
-    name:str |None=None
-    age:int |None=None
-    year:str |None=None
 
 app = FastAPI()
 
-# tr = TextRecognizer("")
 
 @app.get("/")
 async def index():
@@ -22,7 +14,9 @@ async def index():
 
 @app.post("/files/")
 async def create_upload_file(file:UploadFile=File(...)):
-    tr = TextRecognizer(file.filename)
+    contents = await file.read()
+    image = Image.open(BytesIO(contents))
+    tr = TextRecognizer(image)
     return {"extracted_text":tr.clean_text()}
 
 
