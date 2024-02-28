@@ -30,6 +30,6 @@ class TextRecognizer:
         return cleanText
 
 
-if __name__ == "__main__":
-    tr = TextRecognizer("test.jpeg")
-    print(tr.clean_text())
+# if __name__ == "__main__":
+#     tr = TextRecognizer("test2.jpg")
+#     print(tr.clean_text())
