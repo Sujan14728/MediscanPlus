@@ -5,13 +5,17 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 
-const CameraComponent = () => {
+const ServerLink =
+  'https://7480-2404-7c00-52-3996-89d3-10e0-388c-eacf.ngrok-free.app';
+
+const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
@@ -32,13 +36,45 @@ const CameraComponent = () => {
   }
 
   const takePicture = async () => {
+    // if (cameraRef) {
+    //   try {
+    //     const data = await cameraRef.current.takePictureAsync();
+    //     console.log(data);
+    //     setImage(data.uri);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
     if (cameraRef) {
       try {
-        const data = await cameraRef.current.takePictureAsync();
-        console.log(data);
-        setImage(data.uri);
+        const photo = await cameraRef.current.takePictureAsync({
+          base64: true,
+        });
+
+        const formData = new FormData();
+        formData.append('image', {
+          uri: photo.uri,
+          type: 'image/jpeg',
+          name: 'photo.jpg',
+        });
+
+        const response = await fetch(`${ServerLink}/files`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        const responseData = await response.json();
+        console.log('Response:', responseData);
+        // setImage(photo.uri);
       } catch (error) {
-        console.log(error);
+        console.error('Error:', error);
       }
     }
   };
@@ -59,7 +95,7 @@ const CameraComponent = () => {
         <Image
           source={{ uri: image }}
           style={styles.camera}
-          onClick={retakePicture}
+          onPress={retakePicture}
         />
       )}
       <View style={{ position: 'relative' }}>
@@ -74,7 +110,11 @@ const CameraComponent = () => {
               position: 'absolute',
             }}
           >
-            <Button title={'Re-take'} icon="retweet" />
+            <Button
+              title={'Re-take'}
+              icon="retweet"
+              onPress={() => setImage(null)}
+            />
             <Button title={'Save'} icon="check" />
           </View>
         ) : (
@@ -84,6 +124,9 @@ const CameraComponent = () => {
             onPress={takePicture}
           />
         )}
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.buttonText}>Close Camera</Text>
+        </TouchableOpacity>
       </View>
 
       <StatusBar />

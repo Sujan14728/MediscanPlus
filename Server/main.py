@@ -1,12 +1,30 @@
 from fastapi import FastAPI,Path,File,UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from ocr import TextRecognizer
 from PIL import Image
 from io import BytesIO
 
 
+
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+students = {
+    1: {
+        "name": "John",
+        "age": 17,
+        "year": "year 12"
+    },
+}
 
 @app.get("/")
 async def index():
@@ -60,5 +78,18 @@ async def create_upload_file(file:UploadFile=File(...)):
 #     students[student_id] = student
 #     return students[student_id]
 
+# @app.post("/uploadimage")
+# async def upload_image(image: UploadFile = File(...)):
+
+#     image.filename = f"{uuid.uuid4()}.jpg"
+#     contents = await image.read()
+
+#     with open(f"uploaded_images/{image.filename}", "wb") as f:
+#         f.write(contents)
+#     data={
+#         "name":"Paracetamol",
+#         "uses":"Pain killer"
+#     }
+#     return data
 
 

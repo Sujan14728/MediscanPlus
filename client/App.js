@@ -17,6 +17,11 @@ export default function App() {
   const handleButtonClick = () => {
     setShowCamera(true);
   };
+
+  const handleCloseCamera = () => {
+    setShowCamera(false);
+  };
+
   return (
     <View style={styles.app__container}>
       {!showCamera && (
