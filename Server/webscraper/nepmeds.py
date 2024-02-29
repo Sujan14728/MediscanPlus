@@ -98,12 +98,13 @@ for i in url:
     uses_data,side_effect_data = get_data(i)
     data.loc[data['URL'] == i, 'Uses'] = uses_data
     data.loc[data['URL'] == i, 'Side Effects'] = side_effect_data
-    time.sleep(3)
+    for j in range (0,100):
+        data.to_csv('nepmeds.csv', index=False) 
     print(f"getting data from {i}")
+    time.sleep(3)
 
 print(data)
 
-data.to_csv('nepmeds.csv', index=False)
 
 
 
