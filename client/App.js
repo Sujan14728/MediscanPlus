@@ -31,9 +31,31 @@ export default function App() {
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
             {!showCamera ? (
+              <>
+                <Text style={{
+                color: 'black',
+                fontSize: 25,
+                fontWeight: 'bold',
+                padding: 20,
+              
+              }}>
+                Scan the medicine cover.
+              </Text>
               <TouchableOpacity onPress={handleButtonClick}>
-                <Text>Open Camera</Text>
+                <Text
+                style={{
+                  color: 'white',
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  padding: 20,
+                  borderColor: 'black',
+                  backgroundColor: 'grey',
+                  borderRadius: 10,
+                  
+                }}
+                >Open Camera</Text>
               </TouchableOpacity>
+              </>
             ) : (
               <CameraComponent onClose={() => setShowCamera(false)} />
             )}
@@ -51,7 +73,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header__container: {
-    // height: 500,
+    backgroundColor: '#A61E51',
+    padding: 15,
   },
   container: {
     flex: 1,

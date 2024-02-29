@@ -78,8 +78,8 @@ const CameraComponent = () => {
             <Button title={'Save'} icon="check" />
           </View>
         ) : (
+          
           <Button
-            title={'Take a picture'}
             icon={'camera'}
             onPress={takePicture}
           />

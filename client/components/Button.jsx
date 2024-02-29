@@ -5,7 +5,7 @@ import { Entypo } from '@expo/vector-icons';
 const Button = ({ title, onPress, icon, color }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.button}>
-      <Entypo name={icon} size={28} color={color ? color : '#302e2e'} />
+      <Entypo name={icon} size={40} color={color ? color : '#302e2e'} />
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );
