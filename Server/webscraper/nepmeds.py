@@ -4,6 +4,7 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
+import os
 
 # url = "https://www.nepmeds.com.np/api/product/productbycategory/pharmacy?&find_lt_amount=4.5&find_gt_amount=14284.8&find_brand=&product_type=&page=1&size=10"
 
@@ -59,53 +60,80 @@ headers = {
 s = HTMLSession()
 data = pd.read_csv('nepmeds_urls.csv')
 url = data['URL'].tolist()
-# -----add column to dataframe---
-data['Uses'] = ""
-data['Side Effects'] = ""
+url = url[:1]
+# # -----add column to dataframe---
+# data['Uses'] = ""
+# data['Side Effects'] = ""
 
-def get_data(url):
+# def get_data(url):
+#     r = s.get(url)
+#     soup = BeautifulSoup(r.text, 'html.parser')
+#     use = soup.find('h2', string='Product Overview')
+#     uses_data=''
+#     if use:
+#             parent_div = use.find_parent('div')
+#             if parent_div:
+#                 content = parent_div.find_all('p')
+#                 if content:
+#                     uses_data = ' '.join([p.get_text(strip=True) for p in content])
+#     effect = soup.find('h2', string='Side Effect')
+#     side_effect_data = ''
+#     if effect:
+#             ul_elements = parent_div.find_all('ul')
+#             for ul in ul_elements:
+#                 li_items = ul.find_all('li')
+#                 for li in li_items:
+#                     side_effect_data += li.get_text(strip=True) + ' | '
+#     # side_effect = soup.find('div', class_='DrugOverview__list-container___2eAr6 DrugOverview__content___22ZBX').find_all('li')
+#     # result = []
+#     # for li in use:
+#     #     result.append(li.get_text(strip=True))
+#     # uses_data = ' | '.join(result)
+
+#     # for li in side_effect:
+#     #     result.append(li.get_text(strip=True))
+#     # side_effect_data = ' | '.join(result)
+#     return uses_data, side_effect_data
+# # print(get_data("https://www.1mg.com/drugs/bleocip-15iu-injection-168482"))
+
+# for i in url:
+#     uses_data,side_effect_data = get_data(i)
+#     data.loc[data['URL'] == i, 'Uses'] = uses_data
+#     data.loc[data['URL'] == i, 'Side Effects'] = side_effect_data
+#     for j in range (0,100):
+#         data.to_csv('nepmeds.csv', index=False) 
+#     print(f"getting data from {i}")
+#     time.sleep(3)
+
+# print(data)
+
+# url={
+#     1:[
+#       "https://www.nepmeds.com.np/public/840-840/files/79D03F0D1596FF1-betameth-g1.jpg",
+#       "https://www.nepmeds.com.np/public/840-840/files/94E09D10A5E6713-betameth-g2.jpg",
+#       "https://www.nepmeds.com.np/public/840-840/files/407B3ACD5CA5A79-betameth-g.jpg",
+#     ],
+#     2
+# }
+
+
+# Function to scrape images from a webpage
+def scrape_images(url, output_dir):
     r = s.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    use = soup.find('h2', string='Product Overview')
-    uses_data=''
-    if use:
-            parent_div = use.find_parent('div')
-            if parent_div:
-                content = parent_div.find_all('p')
-                if content:
-                    uses_data = ' '.join([p.get_text(strip=True) for p in content])
-    effect = soup.find('h2', string='Side Effect')
-    side_effect_data = ''
-    if effect:
-            ul_elements = parent_div.find_all('ul')
-            for ul in ul_elements:
-                li_items = ul.find_all('li')
-                for li in li_items:
-                    side_effect_data += li.get_text(strip=True) + ' | '
-    # side_effect = soup.find('div', class_='DrugOverview__list-container___2eAr6 DrugOverview__content___22ZBX').find_all('li')
-    # result = []
-    # for li in use:
-    #     result.append(li.get_text(strip=True))
-    # uses_data = ' | '.join(result)
-
-    # for li in side_effect:
-    #     result.append(li.get_text(strip=True))
-    # side_effect_data = ' | '.join(result)
-    return uses_data, side_effect_data
-# print(get_data("https://www.1mg.com/drugs/bleocip-15iu-injection-168482"))
-
-for i in url:
-    uses_data,side_effect_data = get_data(i)
-    data.loc[data['URL'] == i, 'Uses'] = uses_data
-    data.loc[data['URL'] == i, 'Side Effects'] = side_effect_data
-    for j in range (0,100):
-        data.to_csv('nepmeds.csv', index=False) 
-    print(f"getting data from {i}")
-    time.sleep(3)
-
-print(data)
-
-
+    soup = BeautifulSoup(r.text, 'html5lib')
+    img_tags = soup.find_all('img')
+    print(img_tags,"hi")
+    for img_tag in img_tags:
+        img_url = img_tag['src']
+        img_name = img_url.split('/')[-1]  # Extract filename
+        img_path = os.path.join(output_dir, img_name)
+        print("hi")
+        # Download image
+        img_data = s.get(img_url).content
+        with open(img_path, 'wb') as f:
+            f.write(img_data)
+output_dir = 'images'
+scrape_images("https://www.nepmeds.com.np/detail/betameth-g-cream", output_dir)
 
 
 

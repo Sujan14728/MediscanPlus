@@ -4,6 +4,7 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
+import os
 
 # url = "https://www.1mg.com/pharmacy_api_gateway/v4/drug_skus/by_prefix?prefix_term=a&page=1&per_page=20"
 
@@ -62,36 +63,56 @@ s = HTMLSession()
 data = pd.read_csv('1mg_urls.csv')
 url = data['URL'].tolist()
 # -----add column to dataframe---
-data['Uses'] = ""
-data['Side Effects'] = ""
+# data['Uses'] = ""
+# data['Side Effects'] = ""
 
 
 
-url = url[:10]
-def get_data(url):
+# url = url[:10]
+# def get_data(url):
+#     r = s.get(url)
+#     soup = BeautifulSoup(r.text, 'html.parser')
+#     use = soup.find('ul', class_='DrugOverview__list___1HjxR DrugOverview__uses___1jmC3').find_all('li')
+#     side_effect = soup.find('div', class_='DrugOverview__list-container___2eAr6 DrugOverview__content___22ZBX').find_all('li')
+#     result = []
+#     for li in use:
+#         result.append(li.get_text(strip=True))
+#     uses_data = ' | '.join(result)
+
+#     for li in side_effect:
+#         result.append(li.get_text(strip=True))
+#     side_effect_data = ' | '.join(result)
+#     return uses_data, side_effect_data
+# # print(get_data("https://www.1mg.com/drugs/bleocip-15iu-injection-168482"))
+
+# for i in url:
+#     uses_data, side_effect_data = get_data(i)
+#     data.loc[data['URL'] == i, 'Uses'] = uses_data
+#     data.loc[data['URL'] == i, 'Side Effects'] = side_effect_data
+#     time.sleep(3)
+#     print(f"getting data from {i}")
+
+# data.to_csv('1mg_data_test.csv', index=False)
+
+
+
+# Function to scrape images from a webpage
+def scrape_images(url, output_dir):
     r = s.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    use = soup.find('ul', class_='DrugOverview__list___1HjxR DrugOverview__uses___1jmC3').find_all('li')
-    side_effect = soup.find('div', class_='DrugOverview__list-container___2eAr6 DrugOverview__content___22ZBX').find_all('li')
-    result = []
-    for li in use:
-        result.append(li.get_text(strip=True))
-    uses_data = ' | '.join(result)
-
-    for li in side_effect:
-        result.append(li.get_text(strip=True))
-    side_effect_data = ' | '.join(result)
-    return uses_data, side_effect_data
-# print(get_data("https://www.1mg.com/drugs/bleocip-15iu-injection-168482"))
-
-for i in url:
-    uses_data, side_effect_data = get_data(i)
-    data.loc[data['URL'] == i, 'Uses'] = uses_data
-    data.loc[data['URL'] == i, 'Side Effects'] = side_effect_data
-    time.sleep(3)
-    print(f"getting data from {i}")
-
-data.to_csv('1mg_data_test.csv', index=False)
+    img_tags = soup.find_all('img')
+    print(img_tags,"hi")
+    for img_tag in img_tags:
+        img_url = img_tag['src']
+        img_name = img_url.split('/')[-1]  # Extract filename
+        img_path = os.path.join(output_dir, img_name)
+        print("hi")
+        # Download image
+        img_data = s.get(img_url).content
+        with open(img_path, 'wb') as f:
+            f.write(img_data)
+output_dir = 'images'
+scrape_images(url[0], output_dir)
 
 
 
