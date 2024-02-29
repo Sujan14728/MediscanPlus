@@ -12,6 +12,9 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 
+const ServerLink =
+  'https://7480-2404-7c00-52-3996-89d3-10e0-388c-eacf.ngrok-free.app';
+
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
@@ -47,8 +50,6 @@ const CameraComponent = ({ onClose }) => {
         const photo = await cameraRef.current.takePictureAsync({
           base64: true,
         });
-        // console.log(photo);
-        console.log('hello');
 
         const formData = new FormData();
         formData.append('image', {
@@ -57,16 +58,13 @@ const CameraComponent = ({ onClose }) => {
           name: 'photo.jpg',
         });
 
-        const response = await fetch(
-          'https://592e-2404-7c00-52-b38e-b4b9-aff-ce78-fc03.ngrok-free.app/uploadimage',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            body: formData,
-          }
-        );
+        const response = await fetch(`${ServerLink}/files`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
 
         if (!response.ok) {
           throw new Error('Failed to upload image');
