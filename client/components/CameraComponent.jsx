@@ -13,7 +13,7 @@ import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 
 const ServerLink =
-  'https://7480-2404-7c00-52-3996-89d3-10e0-388c-eacf.ngrok-free.app';
+  'https://371f-2404-7c00-52-3996-89d3-10e0-388c-eacf.ngrok-free.app';
 
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -47,9 +47,7 @@ const CameraComponent = ({ onClose }) => {
     // }
     if (cameraRef) {
       try {
-        const photo = await cameraRef.current.takePictureAsync({
-          base64: true,
-        });
+        const photo = await cameraRef.current.takePictureAsync();
 
         const formData = new FormData();
         formData.append('image', {
@@ -65,6 +63,7 @@ const CameraComponent = ({ onClose }) => {
           },
           body: formData,
         });
+        console.log(response);
 
         if (!response.ok) {
           throw new Error('Failed to upload image');
@@ -118,11 +117,7 @@ const CameraComponent = ({ onClose }) => {
             <Button title={'Save'} icon="check" />
           </View>
         ) : (
-          
-          <Button
-            icon={'camera'}
-            onPress={takePicture}
-          />
+          <Button icon={'camera'} onPress={takePicture} />
         )}
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.buttonText}>Close Camera</Text>
