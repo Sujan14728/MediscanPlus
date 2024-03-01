@@ -30,12 +30,15 @@ students = {
 async def index():
     return {"name":"initial data"}
 
-@app.post("/files/")
+@app.post("/files")
 async def create_upload_file(file:UploadFile=File(...)):
     contents = await file.read()
-    image = Image.open(BytesIO(contents))
-    tr = TextRecognizer(image)
-    return {"extracted_text":tr.clean_text()}
+    try:
+        tr = TextRecognizer(contents)
+        return {"extracted_text":tr.clean_text()}
+    except:
+        raise("Image not supported")
+    
 
 
 
