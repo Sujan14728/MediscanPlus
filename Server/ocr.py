@@ -13,7 +13,6 @@ class TextRecognizer:
         extracted_text = ""
         for i in range(len(self.results)):
             extracted_text += " " + self.results[i][1]
-
         return extracted_text
 
     def clean_text(self):
