@@ -21,7 +21,7 @@ const CameraComponent = ({ onClose }) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // console.log(Camera.Constants.FlashMode.on);
 
