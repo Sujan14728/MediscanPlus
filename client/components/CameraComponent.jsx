@@ -205,20 +205,22 @@ const CameraComponent = ({ onClose }) => {
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <View>
-                <Text>Uses:</Text>
+              <View style={{margin:20}}>
                 <View>
-                  <Text>{uses}</Text>
+                  <Text style={{fontSize:30, fontWeight:'bold'}}>Uses:</Text>
+                  <View>
+                    <Text style={{fontSize:20,fontWeight:'bold',color:'#355e3b'}}>{uses}</Text>
+                  </View>
                 </View>
-              </View>
-              <View>
-                <Text>Side Effects:</Text>
-                <View>
-                  {effects?.map((effect, index) => (
-                    <Text>
-                      {index}: {effect}
-                    </Text>
-                  ))}
+                <View style={{marginTop:10}}>
+                  <Text style={{fontSize:30, fontWeight:'bold'}}>Side Effects:</Text>
+                  <View >
+                    {effects?.map((effect, index) => (
+                      <Text key={index} style={{fontSize:18,fontWeight:'bold',color:'#800000'}}>
+                        {index+1}: {effect}
+                      </Text>
+                    ))}
+                  </View>
                 </View>
               </View>
               <Button
@@ -328,6 +330,7 @@ const styles = StyleSheet.create({
   header__container: {
     backgroundColor: '#A61E51',
     padding: 15,
+    justifyContent: 'flex-start',
   },
   container: {
     // flex: 1,
