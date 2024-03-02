@@ -13,8 +13,6 @@ import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 import ImagePickerComponent from './ImagePickerComponent';
 
-const ServerLink = process.env.SERVER_LINK
-
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
@@ -22,6 +20,8 @@ const CameraComponent = ({ onClose }) => {
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // console.log(Camera.Constants.FlashMode.on);
 
   const cameraRef = useRef(null);
 
@@ -49,17 +49,8 @@ const CameraComponent = ({ onClose }) => {
     // }
     if (cameraRef) {
       try {
-        setLoading(true);
         const photo = await cameraRef.current.takePictureAsync();
-
-        // Save the image to the gallery
-        const asset = await MediaLibrary.createAssetAsync(photo.uri);
-        await MediaLibrary.createAlbumAsync('YourAlbumName', asset, false);
-
-        setImage(photo.uri); // Save the image URI
-        console.log('Image saved to gallery:', photo.uri);
-
-        console.log(photo.uri);
+        setLoading(true);
         const formData = new FormData();
         formData.append('file', {
           uri: photo.uri,
@@ -67,7 +58,7 @@ const CameraComponent = ({ onClose }) => {
           name: 'photo.jpg',
         });
 
-        const response = await fetch(`${ServerLink}/files`, {
+        const response = await fetch(`${process.env.SERVER_ADDRESS}/files`, {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -82,8 +73,9 @@ const CameraComponent = ({ onClose }) => {
         const responseData = await response.json();
         console.log('Response:', responseData);
 
-        // setData(responseData.extracted_text);
-        // setLoading(false);
+        setData(responseData.extracted_text);
+        setLoading(false);
+        console.log(loading);
 
         // setImage(photo.uri);
       } catch (error) {
@@ -101,8 +93,8 @@ const CameraComponent = ({ onClose }) => {
 
   const postImage = async (uri) => {
     try {
-      setLoading(true);
       // const photo = await cameraRef.current.takePictureAsync();
+      setLoading(true);
 
       const formData = new FormData();
       formData.append('file', {
@@ -111,7 +103,7 @@ const CameraComponent = ({ onClose }) => {
         name: 'photo.jpg',
       });
 
-      const response = await fetch(`${ServerLink}/files`, {
+      const response = await fetch(`${process.env.SERVER_ADDRESS}/files`, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -125,7 +117,7 @@ const CameraComponent = ({ onClose }) => {
 
       const responseData = await response.json();
       console.log('Response:', responseData);
-
+      setData(responseData.extracted_text);
       setLoading(false);
 
       // setImage(photo.uri);
@@ -137,80 +129,128 @@ const CameraComponent = ({ onClose }) => {
   // const aspectRatio = 16 / 9;
   const retakePicture = () => {};
 
+  const toggleFlashMode = () => {
+    if (flash === Camera.Constants.FlashMode.off) {
+      setFlash(Camera.Constants.FlashMode.torch);
+    } else {
+      setFlash(Camera.Constants.FlashMode.off);
+    }
+  };
+  // console.log(flash);
+  const toggleCameraFace = () => {
+    if (type === Camera.Constants.Type.back) {
+      setType(Camera.Constants.Type.front);
+    } else {
+      setType(Camera.Constants.Type.back);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* {loading ? (
+      {loading ? (
         <View>
           <Text>Processing image...</Text>
         </View>
       ) : (
-      )} */}
-
-      <View>
-        {data ? (
-          <View>
-            <Text>{data}</Text>
-            <Button
-              onPress={() => {
-                setData(null);
-              }}
-              title={'Close'}
-            ></Button>
-          </View>
-        ) : (
-          <View>
-            {!image ? (
-              <Camera
-                style={styles.camera}
-                type={type}
-                flashMode={flash}
-                ref={cameraRef}
-              ></Camera>
-            ) : (
-              <Image
-                source={{ uri: image }}
-                style={styles.camera}
-                onPress={retakePicture}
-              />
-            )}
-            <View style={{ position: 'relative'}}>
-              {image ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                    borderWidth: 2,
-                    width: Dimensions.get('window').width,
-                    backgroundColor: '#f0f0f0',
-                    marginBottom:40
-                  }}
-                >
-                  <Button
-                    title={'Re-take'}
-                    icon="retweet"
-                    onPress={() => setImage(null)}
-                  />
-                  <Button title={'Save'} icon="check" />
-                </View>
-              ) : (
-                <View style={styles.imageOptions}>
-                  <Button icon={'camera'} onPress={takePicture} style={styles.cameraIcon}/>
-                  {/* Image picker component */}
-                  <ImagePickerComponent
-                  onSelectImage={onSelectImage}
-                  loading={loading}
-                />
-                </View>
-              )}
-              
-
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Button icon={'cross'} title={"exit"}>Close Camera</Button>
-              </TouchableOpacity>
+        <View>
+          {data ? (
+            <View>
+              <Text>{data}</Text>
+              <Button
+                onPress={() => {
+                  setData(null);
+                }}
+                title={'Close'}
+              ></Button>
             </View>
-          </View>
-        )}
-      </View>
+          ) : (
+            <View>
+              <View style={styles.topSection}>
+                <View style={{ flex: 1 }}>
+                  <TouchableOpacity>
+                    <Button
+                      icon={'flash'}
+                      color={
+                        flash === Camera.Constants.FlashMode.torch
+                          ? '#fff'
+                          : '#272626'
+                      }
+                      onPress={toggleFlashMode}
+                    ></Button>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ position: 'absolute', right: 10 }}>
+                  <TouchableOpacity>
+                    <Button
+                      icon={'cross'}
+                      color={'#fff'}
+                      onPress={onClose}
+                    ></Button>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.cameraContainer}>
+                {!image ? (
+                  <Camera
+                    style={styles.camera}
+                    type={type}
+                    flashMode={flash}
+                    ref={cameraRef}
+                  >
+                    <View></View>
+                    <View style={styles.bottomSection}>
+                      {image ? (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-around',
+                            borderWidth: 2,
+                            width: Dimensions.get('window').width,
+                            backgroundColor: '#f0f0f0',
+                            marginBottom: 40,
+                          }}
+                        >
+                          <Button
+                            title={'Re-take'}
+                            icon="retweet"
+                            onPress={() => setImage(null)}
+                          />
+                          <Button title={'Save'} icon="check" />
+                        </View>
+                      ) : (
+                        <View style={styles.imageOptions}>
+                          {/* Image picker component */}
+                          <ImagePickerComponent
+                            onSelectImage={onSelectImage}
+                            loading={loading}
+                          />
+                          <Button
+                            // icon={'camera'}
+                            onPress={takePicture}
+                            style={styles.cameraIcon}
+                          />
+                          <Button
+                            icon={'cycle'}
+                            onPress={toggleCameraFace}
+                            color={'#fff'}
+                            // style={styles.cameraIcon}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  </Camera>
+                ) : (
+                  <Image
+                    source={{ uri: image }}
+                    style={styles.camera}
+                    onPress={retakePicture}
+                  />
+                )}
+              </View>
+            </View>
+          )}
+        </View>
+      )}
 
       <StatusBar />
     </View>
@@ -229,37 +269,57 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
+  cameraContainer: {
+    // position: 'absolute',
+    // height: 0,
+    // justifyContent: 'center',
+    // height: Dimensions.get('window').height,
+    flexDirection: 'column',
+  },
   camera: {
     // flex: 1,
-    // width: Dimensions.get('window').width,
     // height: Dimensions.get('window').height,
-    height: Dimensions.get('window').height - 120,
-    aspectRatio: 16 / 19,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height - 50,
+    aspectRatio: 13 / 19,
+    justifyContent: 'space-between',
+    // alignSelf: 'center',
+    // borderColor: '#ff0000',
+    // borderWidth: 8,
+  },
+  topSection: {
+    // flex: 1,
+    height: 50,
+    // position: 'relative',
+    flexDirection: 'row',
+    gap: 30,
+    backgroundColor: '#000',
+    // marginTop: 40,
+  },
+  bottomSection: {
+    backgroundColor: '#00000040',
+    height: 120,
   },
   data_container: {
     height: Dimensions.get('window').height - 120,
     backgroundColor: '#edd4c0',
   },
   cameraIcon: {
-    borderColor: 'black',
-    borderWidth: 2,
+    // borderColor: 'black',
+    // borderWidth: 2,
     borderRadius: 100,
-    padding:3,
-    height: 65,
-    width: 65,
+    padding: 3,
+    height: 80,
+    width: 80,
+    backgroundColor: '#fff',
   },
-  imageOptions:{
+  imageOptions: {
     flex: 1,
+    width: Dimensions.get('window').width,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 25,
-    padding:40,
-    marginLeft: 60,
+    justifyContent: 'space-around',
+    gap: 40,
+    paddingHorizontal: 80,
   },
-  closeButton:{
-    position: 'absolute',
-    bottom: 0,
-    color: 'red',
-  }
 });
