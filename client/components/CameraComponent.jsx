@@ -16,10 +16,27 @@ import ImagePickerComponent from './ImagePickerComponent';
 import Header from './Header';
 
 const mock = {
-  drug_name: 'Omee Capsule Omeprazole',
+  drug_name: 'Glivec 400mg Tablet Imatinib mesylate',
   is_drug_found: true,
-  side_effects: 'Diarrhea Flatulence Headache Nausea Vomiting Abdominal pain',
-  uses: 'Treatment of HeartburnTreatment of Gastroesophageal reflux disease (Acid reflux)Treatment of Peptic ulcer diseaseTreatment of Zollinger-Ellison syndrome',
+  side_effects: [
+    'Edema swelling',
+    'Nausea',
+    'Vomiting',
+    'Muscle cramp',
+    'Musculoskeletal bone muscle or joint pain',
+    'Diarrhea',
+    'Rash',
+    'Fatigue',
+    'Abdominal pain',
+    'Bleeding',
+    'Breathing problems',
+    'Cough',
+    'Weight gain',
+    'Dry eye',
+    'Dizziness',
+    'Hemorrhage',
+  ],
+  uses: 'Treatment of Cancer',
 };
 
 const CameraComponent = ({ onClose }) => {
@@ -31,7 +48,7 @@ const CameraComponent = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   // const [name, setName] = useState();
   const [uses, setUses] = useState(null);
-  const [effects, setEffects] = useState();
+  const [effects, setEffects] = useState(null);
   const [drugImage, setDrugImage] = useState(null);
 
   // console.log(Camera.Constants.FlashMode.on);
@@ -111,10 +128,9 @@ const CameraComponent = ({ onClose }) => {
     try {
       // const photo = await cameraRef.current.takePictureAsync();
       setLoading(true);
-
       const formData = new FormData();
       formData.append('file', {
-        uri: uri,
+        uri: photo.uri,
         type: 'image/jpg',
         name: 'photo.jpg',
       });
@@ -133,8 +149,13 @@ const CameraComponent = ({ onClose }) => {
 
       const responseData = await response.json();
       console.log('Response:', responseData);
-      setData(responseData.extracted_text);
+
+      setData([responseData.uses, responseData.side_effects]);
+      setUses(responseData.uses);
+      setEffects(responseData.side_effects);
+      setImage(photo.uri);
       setLoading(false);
+      // console.log(loading);
 
       // setImage(photo.uri);
     } catch (error) {
@@ -179,12 +200,27 @@ const CameraComponent = ({ onClose }) => {
         </View>
       ) : (
         <View>
-          {!data ? (
+          {data ? (
             <View>
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <View>{/* Side Effects and uses */}</View>
+              <View>
+                <Text>Uses:</Text>
+                <View>
+                  <Text>{uses}</Text>
+                </View>
+              </View>
+              <View>
+                <Text>Side Effects:</Text>
+                <View>
+                  {effects?.map((effect, index) => (
+                    <Text>
+                      {index}: {effect}
+                    </Text>
+                  ))}
+                </View>
+              </View>
               <Button
                 onPress={() => {
                   setData(null);
