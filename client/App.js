@@ -62,12 +62,12 @@ export default function App() {
               </TouchableOpacity>
               </>
             ) : (
-              <CameraComponent onClose={() => setShowCamera(false)} />
+              <CameraComponent onClose={handleCloseCamera} />
             )}
           </View>
         </SafeAreaView>
       </View>
-      {/* <StatusBar /> */}
+      <StatusBar />
     </View>
   );
 }

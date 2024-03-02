@@ -28,7 +28,7 @@ const ImagePickerComponent = ({ onSelectImage, loading }) => {
       disabled={loading}
       style={styles.button}
     >
-        <Entypo name='image' size={35} color='#302e2e'/>
+        <Entypo name='image' size={35} color='#ffffff'/>
     </TouchableOpacity>
   );
 };
