@@ -35,13 +35,23 @@ async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     try:
         tr = TextRecognizer(contents)
+        # print(tr.clean_text())
     except:
         raise ("Image not supported")
 
-    drug_composition = get_drugs(tr.clean_text())
+    extracted_text = tr.clean_text()
+    drug_composition = get_drugs(extracted_text)
+
+    
     if not drug_composition:
-        return drug
+        drug_composition = get_drugs(extracted_text.lower())
+        if not drug_composition:
+            return drug
+
+
     drug_name = cosine(drug_composition)
+    if not drug_name:
+        return drug
     result = get_result(drug_name)
 
     drug.is_drug_found = True

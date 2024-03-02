@@ -3,10 +3,9 @@ import re
 import easyocr
 from PIL import Image
 
-
 class TextRecognizer:
     def __init__(self, img: str):
-        reader = easyocr.Reader(["en"])
+        reader = easyocr.Reader(["en"],gpu=True)
         self.results = reader.readtext(img)
         self.extracted_text = self.get_text()
 
