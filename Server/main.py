@@ -35,75 +35,23 @@ async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     try:
         tr = TextRecognizer(contents)
-        return {"extracted_text":tr.clean_text()}
     except:
-<<<<<<< HEAD
         raise ("Image not supported")
 
-    drug_composition = get_drugs(tr.clean_text())
+    extracted_text = tr.clean_text()
+    drug_composition = get_drugs(extracted_text)
+
+    
     if not drug_composition:
-        return drug
+        drug_composition = get_drugs(extracted_text.lower())
+        if not drug_composition:
+            return drug
+
+
     drug_name = cosine(drug_composition)
+    if not drug_name:
+        return drug
     result = get_result(drug_name)
-=======
-        raise("Image not supported")
-    
-
-
-
-
-# students = {
-#     1: {
-#         "name": "John",
-#         "age": 17,
-#         "year": "year 12"
-#     },
-# }
-
-# @app.get("/")
-# async def index():
-#     return {"name":"initial data"}
-
-# @app.get("/get-students/{student_id}")
-# async def get_student(student_id:int):
-#     return students[student_id]
-
-# @app.get("/get-by-name")
-# async def get_student(name:str | None=None):
-#     for student_id in students:
-#         if students[student_id]["name"] ==name:
-#             return students[student_id]
-#     return {"Data":"Not found"}
-    
-
-# @app.post("/create-student/{student_id}")
-# async def create_student(student_id:int,student:Student):
-#     if student_id in students:
-#         return {"Error":"student already exists"}
-#     students[student_id] = student
-#     return students[student_id]
-
-# @app.put("/update-student/{student_id}") 
-# async def updata_student(student_id:int,student:UpdateStudent):
-#     if student_id not in students:
-#         return {"Error":"Student doesnot exists"}
-#     students[student_id] = student
-#     return students[student_id]
-
-# @app.post("/uploadimage")
-# async def upload_image(image: UploadFile = File(...)):
-
-#     image.filename = f"{uuid.uuid4()}.jpg"
-#     contents = await image.read()
-
-#     with open(f"uploaded_images/{image.filename}", "wb") as f:
-#         f.write(contents)
-#     data={
-#         "name":"Paracetamol",
-#         "uses":"Pain killer"
-#     }
-#     return data
->>>>>>> 5238f32 (bug)
 
     drug.is_drug_found = True
     drug.uses = result["Uses"]
