@@ -41,12 +41,10 @@ async def create_upload_file(file: UploadFile = File(...)):
     extracted_text = tr.clean_text()
     drug_composition = get_drugs(extracted_text)
 
-    
     if not drug_composition:
         drug_composition = get_drugs(extracted_text.lower())
         if not drug_composition:
             return drug
-
 
     drug_name = cosine(drug_composition)
     if not drug_name:
@@ -56,6 +54,6 @@ async def create_upload_file(file: UploadFile = File(...)):
     drug.is_drug_found = True
     drug.uses = result["Uses"]
     drug.side_effects = result["Side_effects"]
-    drug.drug_name = drug_name
+    drug.drug_name = result["Medicine_name"]
 
     return drug
