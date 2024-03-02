@@ -15,7 +15,7 @@ import Button from './Button';
 import ImagePickerComponent from './ImagePickerComponent';
 import Header from './Header';
 
-mock = {
+const mock = {
   drug_name: 'Omee Capsule Omeprazole',
   is_drug_found: true,
   side_effects: 'Diarrhea Flatulence Headache Nausea Vomiting Abdominal pain',
@@ -29,6 +29,10 @@ const CameraComponent = ({ onClose }) => {
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+  // const [name, setName] = useState();
+  const [uses, setUses] = useState(null);
+  const [effects, setEffects] = useState();
+  const [drugImage, setDrugImage] = useState(null);
 
   // console.log(Camera.Constants.FlashMode.on);
 
@@ -83,8 +87,11 @@ const CameraComponent = ({ onClose }) => {
         console.log('Response:', responseData);
 
         setData([responseData.uses, responseData.side_effects]);
+        setUses(responseData.uses);
+        setEffects(responseData.side_effects);
+        setImage(photo.uri);
         setLoading(false);
-        console.log(loading);
+        // console.log(loading);
 
         // setImage(photo.uri);
       } catch (error) {
@@ -172,12 +179,12 @@ const CameraComponent = ({ onClose }) => {
         </View>
       ) : (
         <View>
-          {data ? (
+          {!data ? (
             <View>
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <Text>{data}</Text>
+              <View>{/* Side Effects and uses */}</View>
               <Button
                 onPress={() => {
                   setData(null);
