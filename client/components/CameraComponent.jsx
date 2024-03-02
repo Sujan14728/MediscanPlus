@@ -108,9 +108,6 @@ const CameraComponent = ({ onClose }) => {
         setEffects(responseData.side_effects);
         setDrugImage(photo.uri);
         setLoading(false);
-        // console.log(loading);
-
-        // setImage(photo.uri);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -126,11 +123,10 @@ const CameraComponent = ({ onClose }) => {
 
   const postImage = async (uri) => {
     try {
-      // const photo = await cameraRef.current.takePictureAsync();
       setLoading(true);
       const formData = new FormData();
       formData.append('file', {
-        uri: photo.uri,
+        uri: uri,
         type: 'image/jpg',
         name: 'photo.jpg',
       });
@@ -201,29 +197,85 @@ const CameraComponent = ({ onClose }) => {
       ) : (
         <View style={{ flex: 1, justifyContent: 'flex-start' }}>
           {data ? (
-            // Result section
             <View>
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <View style={{margin:20}}>
+              {!data?.is_drug_found ? (
+                <View
+                  style={{
+                    marginLeft: 10,
+                    justifyContent: 'center',
+                    height: 220,
+                    position: 'relative',
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 30,
+                      fontWeight: '600',
+                      color: '#da4848',
+                      alignSelf: 'center',
+                      position: 'absolute',
+                      bottom: 0,
+                    }}
+                  >
+                    No Drug Found
+                  </Text>
+                </View>
+              ) : (
+                // Result section
                 <View>
-                  <Text style={{fontSize:30, fontWeight:'bold'}}>Uses:</Text>
-                  <View>
-                    <Text style={{fontSize:20,fontWeight:'bold',color:'#355e3b'}}>{uses}</Text>
-                  </View>
-                </View>
-                <View style={{marginTop:10}}>
-                  <Text style={{fontSize:30, fontWeight:'bold'}}>Side Effects:</Text>
-                  <View >
-                    {effects?.map((effect, index) => (
-                      <Text key={index} style={{fontSize:18,fontWeight:'bold',color:'#800000'}}>
-                        {index+1}: {effect}
+                  <View style={{ margin: 20 }}>
+                    <View style={{ margin: 20, alignSelf: 'center' }}>
+                      <Image
+                        style={{
+                          width: 120,
+                          height: 120,
+                          objectFit: 'cover',
+                          borderRadius: 8,
+                        }}
+                        source={{ uri: drugImage }}
+                      />
+                    </View>
+                    <View>
+                      <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
+                        Uses:
                       </Text>
-                    ))}
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 20,
+                            fontWeight: 'bold',
+                            color: '#355e3b',
+                          }}
+                        >
+                          {uses}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={{ marginTop: 10 }}>
+                      <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
+                        Side Effects:
+                      </Text>
+                      <View>
+                        {effects?.map((effect, index) => (
+                          <Text
+                            key={index}
+                            style={{
+                              fontSize: 18,
+                              fontWeight: 'bold',
+                              color: '#800000',
+                            }}
+                          >
+                            {index + 1}: {effect}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
                   </View>
                 </View>
-              </View>
+              )}
               <TouchableOpacity
                 style={{
                   width: 60,
