@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   StatusBar,
@@ -12,6 +13,14 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 import ImagePickerComponent from './ImagePickerComponent';
+import Header from './Header';
+
+mock = {
+  drug_name: 'Omee Capsule Omeprazole',
+  is_drug_found: true,
+  side_effects: 'Diarrhea Flatulence Headache Nausea Vomiting Abdominal pain',
+  uses: 'Treatment of HeartburnTreatment of Gastroesophageal reflux disease (Acid reflux)Treatment of Peptic ulcer diseaseTreatment of Zollinger-Ellison syndrome',
+};
 
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -73,7 +82,7 @@ const CameraComponent = ({ onClose }) => {
         const responseData = await response.json();
         console.log('Response:', responseData);
 
-        setData(responseData.extracted_text);
+        setData([responseData.uses, responseData.side_effects]);
         setLoading(false);
         console.log(loading);
 
@@ -148,13 +157,26 @@ const CameraComponent = ({ onClose }) => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <View>
-          <Text>Processing image...</Text>
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+          <View style={styles.header__container}>
+            <Header />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+            }}
+          >
+            <ActivityIndicator size="large" color={'#000'} />
+          </View>
         </View>
       ) : (
         <View>
           {data ? (
             <View>
+              <View style={styles.header__container}>
+                <Header />
+              </View>
               <Text>{data}</Text>
               <Button
                 onPress={() => {
@@ -260,6 +282,10 @@ const CameraComponent = ({ onClose }) => {
 export default CameraComponent;
 
 const styles = StyleSheet.create({
+  header__container: {
+    backgroundColor: '#A61E51',
+    padding: 15,
+  },
   container: {
     // flex: 1,
     backgroundColor: '#fff',

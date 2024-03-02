@@ -6,7 +6,7 @@ from PIL import Image
 
 from nlp import cosine, get_drugs, get_result
 from ocr import TextRecognizer
-from server.types import Drug
+from models import Drug
 
 app = FastAPI()
 
@@ -38,15 +38,24 @@ async def create_upload_file(file: UploadFile = File(...)):
     except:
         raise ("Image not supported")
 
-    drug_composition = get_drugs(tr.clean_text())
+    extracted_text = tr.clean_text()
+    drug_composition = get_drugs(extracted_text)
+
+    
     if not drug_composition:
-        return drug
+        drug_composition = get_drugs(extracted_text.lower())
+        if not drug_composition:
+            return drug
+
+
     drug_name = cosine(drug_composition)
+    if not drug_name:
+        return drug
     result = get_result(drug_name)
 
     drug.is_drug_found = True
     drug.uses = result["Uses"]
-    drug.side_effects = result["side_effects"]
+    drug.side_effects = result["Side_effects"]
     drug.drug_name = drug_name
 
     return drug
