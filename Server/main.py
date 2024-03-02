@@ -1,12 +1,12 @@
-from fastapi import FastAPI,Path,File,UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from ocr import TextRecognizer
-from PIL import Image
 from io import BytesIO
-from nlp import get_result,cosine,get_drugs
 
+from fastapi import FastAPI, File, Path, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
 
+from nlp import cosine, get_drugs, get_result
+from ocr import TextRecognizer
+from server.types import Drug
 
 app = FastAPI()
 
@@ -20,86 +20,33 @@ app.add_middleware(
 
 
 students = {
-    1: {
-        "name": "John",
-        "age": 17,
-        "year": "year 12"
-    },
+    1: {"name": "John", "age": 17, "year": "year 12"},
 }
+
 
 @app.get("/")
 async def index():
-    return {"name":"initial data"}
+    return {"name": "initial data"}
+
 
 @app.post("/files")
-async def create_upload_file(file:UploadFile=File(...)):
+async def create_upload_file(file: UploadFile = File(...)):
+    drug = Drug()
     contents = await file.read()
     try:
         tr = TextRecognizer(contents)
     except:
-        raise("Image not supported")
-    
+        raise ("Image not supported")
+
     drug_composition = get_drugs(tr.clean_text())
+    if not drug_composition:
+        return drug
     drug_name = cosine(drug_composition)
     result = get_result(drug_name)
-    return result
-    
-    
-    
 
+    drug.is_drug_found = True
+    drug.uses = result["Uses"]
+    drug.side_effects = result["side_effects"]
+    drug.drug_name = drug_name
 
-
-
-# students = {
-#     1: {
-#         "name": "John",
-#         "age": 17,
-#         "year": "year 12"
-#     },
-# }
-
-# @app.get("/")
-# async def index():
-#     return {"name":"initial data"}
-
-# @app.get("/get-students/{student_id}")
-# async def get_student(student_id:int):
-#     return students[student_id]
-
-# @app.get("/get-by-name")
-# async def get_student(name:str | None=None):
-#     for student_id in students:
-#         if students[student_id]["name"] ==name:
-#             return students[student_id]
-#     return {"Data":"Not found"}
-    
-
-# @app.post("/create-student/{student_id}")
-# async def create_student(student_id:int,student:Student):
-#     if student_id in students:
-#         return {"Error":"student already exists"}
-#     students[student_id] = student
-#     return students[student_id]
-
-# @app.put("/update-student/{student_id}") 
-# async def updata_student(student_id:int,student:UpdateStudent):
-#     if student_id not in students:
-#         return {"Error":"Student doesnot exists"}
-#     students[student_id] = student
-#     return students[student_id]
-
-# @app.post("/uploadimage")
-# async def upload_image(image: UploadFile = File(...)):
-
-#     image.filename = f"{uuid.uuid4()}.jpg"
-#     contents = await image.read()
-
-#     with open(f"uploaded_images/{image.filename}", "wb") as f:
-#         f.write(contents)
-#     data={
-#         "name":"Paracetamol",
-#         "uses":"Pain killer"
-#     }
-#     return data
-
-
+    return drug

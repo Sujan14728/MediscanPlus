@@ -1,6 +1,7 @@
+import re
+
 import easyocr
 from PIL import Image
-import re
 
 
 class TextRecognizer:

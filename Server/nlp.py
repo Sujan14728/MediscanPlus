@@ -1,9 +1,10 @@
-import spacy
-import en_core_med7_lg
 import json
+
+import en_core_med7_lg
+import numpy as np
+import spacy
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 
 with open("drug_data.json", "r") as f:
     data = json.load(f)
