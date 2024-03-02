@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from ocr import TextRecognizer
 from PIL import Image
 from io import BytesIO
+from nlp import get_result,cosine,get_drugs
 
 
 
@@ -35,9 +36,15 @@ async def create_upload_file(file:UploadFile=File(...)):
     contents = await file.read()
     try:
         tr = TextRecognizer(contents)
-        return {"extracted_text":tr.clean_text()}
     except:
         raise("Image not supported")
+    
+    drug_composition = get_drugs(tr.clean_text())
+    drug_name = cosine(drug_composition)
+    result = get_result(drug_name)
+    return result
+    
+    
     
 
 

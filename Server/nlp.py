@@ -41,13 +41,13 @@ def cosine(drug_names: str):
     return all_keys[index]
 
 
-def get_reslut(drug_key: str):
+def get_result(drug_key: str):
     return data[drug_key]
 
 
 if __name__ == "__main__":
     print(
-        get_reslut(
+        get_result(
             cosine(
                 get_drugs(
                     "30 capsules Cipla Rx Formotero Fumarate and Budesonide Powder For Inhalation IP foracort rotacaps 200"
