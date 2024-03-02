@@ -6,7 +6,7 @@ from PIL import Image
 
 from nlp import cosine, get_drugs, get_result
 from ocr import TextRecognizer
-from server.types import Drug
+from models import Drug
 
 app = FastAPI()
 
@@ -107,7 +107,7 @@ async def create_upload_file(file: UploadFile = File(...)):
 
     drug.is_drug_found = True
     drug.uses = result["Uses"]
-    drug.side_effects = result["side_effects"]
+    drug.side_effects = result["Side_effects"]
     drug.drug_name = drug_name
 
     return drug
