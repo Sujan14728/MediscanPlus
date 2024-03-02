@@ -35,7 +35,6 @@ async def create_upload_file(file: UploadFile = File(...)):
     contents = await file.read()
     try:
         tr = TextRecognizer(contents)
-        # print(tr.clean_text())
     except:
         raise ("Image not supported")
 
