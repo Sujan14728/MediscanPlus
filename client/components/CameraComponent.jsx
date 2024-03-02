@@ -15,13 +15,20 @@ import Button from './Button';
 import ImagePickerComponent from './ImagePickerComponent';
 import Header from './Header';
 
+mock = {
+  drug_name: 'Omee Capsule Omeprazole',
+  is_drug_found: true,
+  side_effects: 'Diarrhea Flatulence Headache Nausea Vomiting Abdominal pain',
+  uses: 'Treatment of HeartburnTreatment of Gastroesophageal reflux disease (Acid reflux)Treatment of Peptic ulcer diseaseTreatment of Zollinger-Ellison syndrome',
+};
+
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // console.log(Camera.Constants.FlashMode.on);
 
@@ -75,7 +82,7 @@ const CameraComponent = ({ onClose }) => {
         const responseData = await response.json();
         console.log('Response:', responseData);
 
-        setData(responseData.extracted_text);
+        setData([responseData.uses, responseData.side_effects]);
         setLoading(false);
         console.log(loading);
 
@@ -167,6 +174,9 @@ const CameraComponent = ({ onClose }) => {
         <View>
           {data ? (
             <View>
+              <View style={styles.header__container}>
+                <Header />
+              </View>
               <Text>{data}</Text>
               <Button
                 onPress={() => {
