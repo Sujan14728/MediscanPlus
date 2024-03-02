@@ -106,7 +106,7 @@ const CameraComponent = ({ onClose }) => {
         setData([responseData.uses, responseData.side_effects]);
         setUses(responseData.uses);
         setEffects(responseData.side_effects);
-        setImage(photo.uri);
+        setDrugImage(photo.uri);
         setLoading(false);
         // console.log(loading);
 
@@ -153,7 +153,7 @@ const CameraComponent = ({ onClose }) => {
       setData([responseData.uses, responseData.side_effects]);
       setUses(responseData.uses);
       setEffects(responseData.side_effects);
-      setImage(photo.uri);
+      setDrugImage(uri);
       setLoading(false);
       // console.log(loading);
 
@@ -199,34 +199,64 @@ const CameraComponent = ({ onClose }) => {
           </View>
         </View>
       ) : (
-        <View>
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
           {data ? (
+            // Result section
             <View>
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <View>
-                <Text>Uses:</Text>
+              <View style={{ gap: 10, marginTop: 10, marginLeft: 10 }}>
                 <View>
-                  <Text>{uses}</Text>
+                  <Image
+                    style={{
+                      width: 120,
+                      height: 120,
+                      objectFit: 'cover',
+                      borderRadius: 8,
+                    }}
+                    source={{ uri: drugImage }}
+                  />
+                </View>
+                <View>
+                  <Text style={{ fontSize: 22, fontWeight: '600' }}>Uses:</Text>
+                  <View>
+                    <Text style={{ fontSize: 18 }}>{uses}</Text>
+                  </View>
+                </View>
+                <View>
+                  <Text style={{ fontSize: 22, fontWeight: '600' }}>
+                    Side Effects:
+                  </Text>
+                  <View>
+                    {effects?.map((effect, index) => (
+                      <Text key={index} style={{ fontSize: 18 }}>
+                        {index + 1}: {effect}
+                      </Text>
+                    ))}
+                  </View>
                 </View>
               </View>
-              <View>
-                <Text>Side Effects:</Text>
-                <View>
-                  {effects?.map((effect, index) => (
-                    <Text>
-                      {index}: {effect}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-              <Button
-                onPress={() => {
-                  setData(null);
+              <TouchableOpacity
+                style={{
+                  width: 60,
+                  height: 60,
+                  backgroundColor: 'black',
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  marginTop: 20,
+                  alignSelf: 'center',
                 }}
-                title={'Close'}
-              ></Button>
+              >
+                <Button
+                  onPress={() => {
+                    setData(null);
+                  }}
+                  // title={'Camera'}
+                  icon={'retweet'}
+                  color={'#fff'}
+                ></Button>
+              </TouchableOpacity>
             </View>
           ) : (
             <View>
