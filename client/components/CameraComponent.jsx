@@ -206,32 +206,19 @@ const CameraComponent = ({ onClose }) => {
               <View style={styles.header__container}>
                 <Header />
               </View>
-              <View style={{ gap: 10, marginTop: 10, marginLeft: 10 }}>
+              <View style={{margin:20}}>
                 <View>
-                  <Image
-                    style={{
-                      width: 120,
-                      height: 120,
-                      objectFit: 'cover',
-                      borderRadius: 8,
-                    }}
-                    source={{ uri: drugImage }}
-                  />
-                </View>
-                <View>
-                  <Text style={{ fontSize: 22, fontWeight: '600' }}>Uses:</Text>
+                  <Text style={{fontSize:30, fontWeight:'bold'}}>Uses:</Text>
                   <View>
-                    <Text style={{ fontSize: 18 }}>{uses}</Text>
+                    <Text style={{fontSize:20,fontWeight:'bold',color:'#355e3b'}}>{uses}</Text>
                   </View>
                 </View>
-                <View>
-                  <Text style={{ fontSize: 22, fontWeight: '600' }}>
-                    Side Effects:
-                  </Text>
-                  <View>
+                <View style={{marginTop:10}}>
+                  <Text style={{fontSize:30, fontWeight:'bold'}}>Side Effects:</Text>
+                  <View >
                     {effects?.map((effect, index) => (
-                      <Text key={index} style={{ fontSize: 18 }}>
-                        {index + 1}: {effect}
+                      <Text key={index} style={{fontSize:18,fontWeight:'bold',color:'#800000'}}>
+                        {index+1}: {effect}
                       </Text>
                     ))}
                   </View>
@@ -358,6 +345,7 @@ const styles = StyleSheet.create({
   header__container: {
     backgroundColor: '#A61E51',
     padding: 15,
+    justifyContent: 'flex-start',
   },
   container: {
     // flex: 1,
