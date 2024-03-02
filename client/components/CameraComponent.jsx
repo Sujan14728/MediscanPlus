@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   StatusBar,
@@ -12,6 +13,7 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Button from './Button';
 import ImagePickerComponent from './ImagePickerComponent';
+import Header from './Header';
 
 const CameraComponent = ({ onClose }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -19,7 +21,7 @@ const CameraComponent = ({ onClose }) => {
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [flash, setFlash] = useState(Camera.Constants.FlashMode.off);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // console.log(Camera.Constants.FlashMode.on);
 
@@ -148,8 +150,18 @@ const CameraComponent = ({ onClose }) => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <View>
-          <Text>Processing image...</Text>
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+          <View style={styles.header__container}>
+            <Header />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+            }}
+          >
+            <ActivityIndicator size="large" color={'#000'} />
+          </View>
         </View>
       ) : (
         <View>
@@ -260,6 +272,10 @@ const CameraComponent = ({ onClose }) => {
 export default CameraComponent;
 
 const styles = StyleSheet.create({
+  header__container: {
+    backgroundColor: '#A61E51',
+    padding: 15,
+  },
   container: {
     // flex: 1,
     backgroundColor: '#fff',
