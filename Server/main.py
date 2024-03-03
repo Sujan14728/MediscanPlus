@@ -55,5 +55,6 @@ async def create_upload_file(file: UploadFile = File(...)):
     drug.uses = result["Uses"]
     drug.side_effects = result["Side_effects"]
     drug.drug_name = result["Medicine_name"]
+    print(drug)
 
     return drug
