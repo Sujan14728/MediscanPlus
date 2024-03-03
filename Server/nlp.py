@@ -12,10 +12,11 @@ with open("drug_data.json", "r") as f:
 
 def get_drugs(label: str):
     nlp = spacy.load("en_core_med7_lg")
+    # nlp = spacy.load("content/model-best")
     doc = nlp(label)
     drug_names = [ent.text for ent in doc.ents if ent.label_ == "DRUG"]
     string = " ".join(map(str, drug_names))
-    
+
     return string
 
 
@@ -39,7 +40,7 @@ def cosine(drug_names: str):
         print(f"Document {index}: {all_keys[index]}")
         print(f"Cosine Similarity: {cosine_similarities[index]}")
         result.append(all_keys[index])
-    if cosine_similarities[index] <0.1:
+    if cosine_similarities[index] < 0.1:
         return False
     return all_keys[index]
 
