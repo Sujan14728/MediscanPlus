@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -50,6 +51,7 @@ const CameraComponent = ({ onClose }) => {
   const [uses, setUses] = useState(null);
   const [effects, setEffects] = useState(null);
   const [drugImage, setDrugImage] = useState(null);
+  const [drugName, setDrugName] = useState(null);
 
   // console.log(Camera.Constants.FlashMode.on);
 
@@ -101,16 +103,12 @@ const CameraComponent = ({ onClose }) => {
         }
 
         const responseData = await response.json();
-        console.log('Response:', responseData);
-
-        setData([responseData.uses, responseData.side_effects]);
+        setData(responseData);
         setUses(responseData.uses);
         setEffects(responseData.side_effects);
-        setImage(photo.uri);
+        setDrugImage(photo.uri);
+        setDrugName(responseData.drug_name);
         setLoading(false);
-        // console.log(loading);
-
-        // setImage(photo.uri);
       } catch (error) {
         console.error('Error:', error);
       }
@@ -118,7 +116,6 @@ const CameraComponent = ({ onClose }) => {
   };
 
   const onSelectImage = (uri) => {
-    console.log(uri);
     if (uri) {
       postImage(uri);
     }
@@ -126,11 +123,10 @@ const CameraComponent = ({ onClose }) => {
 
   const postImage = async (uri) => {
     try {
-      // const photo = await cameraRef.current.takePictureAsync();
       setLoading(true);
       const formData = new FormData();
       formData.append('file', {
-        uri: photo.uri,
+        uri: uri,
         type: 'image/jpg',
         name: 'photo.jpg',
       });
@@ -153,11 +149,9 @@ const CameraComponent = ({ onClose }) => {
       setData([responseData.uses, responseData.side_effects]);
       setUses(responseData.uses);
       setEffects(responseData.side_effects);
-      setImage(photo.uri);
+      setDrugImage(uri);
+      setDrugName(responseData.drug_name);
       setLoading(false);
-      // console.log(loading);
-
-      // setImage(photo.uri);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -199,37 +193,131 @@ const CameraComponent = ({ onClose }) => {
           </View>
         </View>
       ) : (
-        <View>
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
           {data ? (
-            <View>
-              <View style={styles.header__container}>
-                <Header />
-              </View>
-              <View style={{margin:20}}>
-                <View>
-                  <Text style={{fontSize:30, fontWeight:'bold'}}>Uses:</Text>
+            <ScrollView>
+              <View>
+                <View style={styles.header__container}>
+                  <Header />
+                </View>
+                {data.is_drug_found == false ? (
+                  <View
+                    style={{
+                      marginLeft: 2,
+                      justifyContent: 'center',
+                      height: 220,
+                      position: 'relative',
+                    }}
+                  >
+                    <Image
+                      style={{
+                        width: 120,
+                        height: 120,
+                        objectFit: 'cover',
+                        borderRadius: 8,
+                        alignSelf: 'center',
+                      }}
+                      source={{ uri: drugImage }}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 26,
+                        fontWeight: '600',
+                        color: '#da4848',
+                        alignSelf: 'center',
+                        position: 'absolute',
+                        bottom: 0,
+                      }}
+                    >
+                      No relevant information found
+                    </Text>
+                  </View>
+                ) : (
+                  // Result section
                   <View>
-                    <Text style={{fontSize:20,fontWeight:'bold',color:'#355e3b'}}>{uses}</Text>
+                    <View style={{ margin: 20 }}>
+                      <View style={{ margin: 20 }}>
+                        <Image
+                          style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: 'cover',
+                            borderRadius: 8,
+                            alignSelf: 'center',
+                          }}
+                          source={{ uri: drugImage }}
+                        />
+                        <Text
+                          style={{
+                            fontSize: 25,
+                            fontWeight: 'bold',
+                            color: '#dd4141',
+                            alignSelf: 'center',
+                          }}
+                        >
+                          {drugName}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
+                          Uses:
+                        </Text>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 20,
+                              fontWeight: 'bold',
+                              color: '#355e3b',
+                            }}
+                          >
+                            {uses}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={{ marginTop: 10 }}>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold' }}>
+                          Side Effects:
+                        </Text>
+                        <View>
+                          {effects?.map((effect, index) => (
+                            <Text
+                              key={index}
+                              style={{
+                                fontSize: 18,
+                                fontWeight: 'bold',
+                                color: '#800000',
+                              }}
+                            >
+                              {index + 1}: {effect}
+                            </Text>
+                          ))}
+                        </View>
+                      </View>
+                    </View>
                   </View>
-                </View>
-                <View style={{marginTop:10}}>
-                  <Text style={{fontSize:30, fontWeight:'bold'}}>Side Effects:</Text>
-                  <View >
-                    {effects?.map((effect, index) => (
-                      <Text key={index} style={{fontSize:18,fontWeight:'bold',color:'#800000'}}>
-                        {index+1}: {effect}
-                      </Text>
-                    ))}
-                  </View>
-                </View>
+                )}
+                <TouchableOpacity
+                  style={{
+                    width: 60,
+                    height: 60,
+                    backgroundColor: 'black',
+                    borderRadius: 100,
+                    justifyContent: 'center',
+                    marginTop: 20,
+                    alignSelf: 'center',
+                  }}
+                >
+                  <Button
+                    onPress={() => {
+                      setData(null);
+                    }}
+                    // title={'Camera'}
+                    icon={'retweet'}
+                    color={'#fff'}
+                  ></Button>
+                </TouchableOpacity>
               </View>
-              <Button
-                onPress={() => {
-                  setData(null);
-                }}
-                title={'Close'}
-              ></Button>
-            </View>
+            </ScrollView>
           ) : (
             <View>
               <View style={styles.topSection}>
@@ -327,6 +415,10 @@ const CameraComponent = ({ onClose }) => {
 export default CameraComponent;
 
 const styles = StyleSheet.create({
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
   header__container: {
     backgroundColor: '#A61E51',
     padding: 15,
